@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\MessageType;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
@@ -19,7 +20,8 @@ class MessageFactory extends Factory
             'content' => fake()->text(),
             'sent_at' => Carbon::now(),
             'conversation_id' => Conversation::factory(),
-            'initial_message_id' => null
+            'initial_message_id' => null,
+            'user_id' => User::factory()
         ];
     }
 

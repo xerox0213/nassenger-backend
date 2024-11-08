@@ -18,7 +18,8 @@ class Message extends Model
         'type',
         'content',
         'conversation_id',
-        'initial_message_id'
+        'initial_message_id',
+        'user_id'
     ];
 
     protected function casts(): array
@@ -41,5 +42,10 @@ class Message extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'initial_message_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
