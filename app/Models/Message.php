@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\MessageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
@@ -15,6 +16,7 @@ class Message extends Model
     protected $fillable = [
         'type',
         'content',
+        'conversation_id'
     ];
 
     protected function casts(): array
@@ -22,5 +24,10 @@ class Message extends Model
         return [
             'type' => MessageType::class
         ];
+    }
+
+    public function conversation(): BelongsTo
+    {
+        return $this->belongsTo(Conversation::class);
     }
 }
