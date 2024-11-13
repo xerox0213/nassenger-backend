@@ -58,4 +58,27 @@ class AuthenticationTest extends TestCase
             ->assertJsonPath('success', false)
             ->assertInvalid(['firstname', 'lastname', 'email', 'password']);
     }
+
+    public function test_login_should_authenticate_the_user_if_he_exists()
+    {
+        $password = '123';
+        $user = User::factory()->create(['password' => $password]);
+        $credentials = $user->only(['email']);
+        $credentials['password'] = $password;
+
+        $response = $this->postJson(route('auth.login'), $credentials);
+
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar
+                ]
+            ]);
+        $this->assertAuthenticatedAs($user);
+    }
 }
