@@ -111,4 +111,13 @@ class AuthenticationTest extends TestCase
             ->assertInvalid(['email', 'password']);
         $this->assertGuest();
     }
+
+    public function test_logout_should_logout_the_authenticated_user()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->postJson(route('auth.logout'));
+
+        $this->assertGuest();
+    }
 }
