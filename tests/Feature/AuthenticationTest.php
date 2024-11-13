@@ -28,4 +28,17 @@ class AuthenticationTest extends TestCase
                 'data' => null
             ]);
     }
+
+    public function test_register_should_not_register_the_user_if_he_already_exists()
+    {
+        $user = User::factory()->create();
+        $credentials = $user->only(['firstname', 'lastname', 'email', 'password']);
+
+        $response = $this->postJson(route('auth.register'), $credentials);
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertInvalid('email');
+    }
 }
