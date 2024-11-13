@@ -41,4 +41,21 @@ class AuthenticationTest extends TestCase
             ->assertJsonPath('success', false)
             ->assertInvalid('email');
     }
+
+    public function test_register_should_not_register_the_user_if_credentials_are_invalid()
+    {
+        $credentials = [
+            'firstname' => '',
+            'lastname' => '',
+            'email' => 'damon.salvatore',
+            'password' => ''
+        ];
+
+        $response = $this->postJson(route('auth.register'), $credentials);
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertInvalid(['firstname', 'lastname', 'email', 'password']);
+    }
 }
