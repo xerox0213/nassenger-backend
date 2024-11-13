@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponseHelper;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -11,10 +12,11 @@ class AuthController extends Controller
 {
     public function user(Request $request)
     {
-        return response()->json([
-            'success' => true,
-            'data' => new UserResource($request->user())
-        ]);
+        $message = 'User retrieved successfully.';
+        $data = new UserResource($request->user());
+        $status = 200;
+
+        return ApiResponseHelper::jsonSuccess($message, $data, $status);
     }
 
     public function register(RegisterRequest $request)
@@ -23,9 +25,10 @@ class AuthController extends Controller
 
         User::create($credentials);
 
-        return response()->json([
-            'success' => true,
-            'data' => null
-        ], 201);
+        $message = 'Registered successfully.';
+        $data = null;
+        $status = 201;
+
+        return ApiResponseHelper::jsonSuccess($message, $data, $status);
     }
 }
