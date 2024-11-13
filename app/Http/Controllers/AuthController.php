@@ -50,4 +50,14 @@ class AuthController extends Controller
 
         return ApiResponseHelper::jsonSuccess($message, $data);
     }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        $message = 'Logged out successfully.';
+        $data = null;
+
+        return ApiResponseHelper::jsonSuccess($message, $data);
+    }
 }
