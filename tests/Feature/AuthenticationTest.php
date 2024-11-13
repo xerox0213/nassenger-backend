@@ -81,4 +81,19 @@ class AuthenticationTest extends TestCase
             ]);
         $this->assertAuthenticatedAs($user);
     }
+
+    public function test_login_should_not_authenticate_the_user_if_he_does_not_exist()
+    {
+        $credentials = [
+            'email' => 'damon.salvatore@gmail.com',
+            'password' => 'elena123'
+        ];
+
+        $response = $this->postJson(route('auth.login'), $credentials);
+
+        $response
+            ->assertStatus(401)
+            ->assertJsonPath('success', false);
+        $this->assertGuest();
+    }
 }
