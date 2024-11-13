@@ -96,4 +96,19 @@ class AuthenticationTest extends TestCase
             ->assertJsonPath('success', false);
         $this->assertGuest();
     }
+
+    public function test_login_should_not_authenticate_the_user_if_credentials_are_invalid()
+    {
+        $credentials = [
+            'email' => 'damon.salvatore',
+            'password' => ''
+        ];
+
+        $response = $this->postJson(route('auth.login'), $credentials);
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['email', 'password']);
+        $this->assertGuest();
+    }
 }
