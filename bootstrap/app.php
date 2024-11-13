@@ -1,8 +1,11 @@
 <?php
 
+use App\Helpers\ApiResponseHelper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+
+        $exceptions->render(function (ValidationException $e, Request $request) {
+            $message = $e->getMessage();
+            $errors = $e->errors();
+            $status = $e->status;
+
+            return ApiResponseHelper::jsonError($message, $errors, $status);
+        });
+
     })->create();
