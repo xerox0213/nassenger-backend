@@ -14,9 +14,8 @@ class AuthController extends Controller
     {
         $message = 'User retrieved successfully.';
         $data = new UserResource($request->user());
-        $status = 200;
 
-        return ApiResponseHelper::jsonSuccess($message, $data, $status);
+        return ApiResponseHelper::jsonSuccess($message, $data);
     }
 
     public function register(RegisterRequest $request)
