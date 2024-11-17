@@ -199,4 +199,16 @@ class ConversationApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid('user_ids.0');
     }
+
+    public function test_store_should_fail_if_user_ids_does_not_exist()
+    {
+        $me = User::factory()->create();
+        $userIds = [$me->id, 123];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid('user_ids.1');
+    }
 }
