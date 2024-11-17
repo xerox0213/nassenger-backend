@@ -173,4 +173,17 @@ class ConversationApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid('user_ids');
     }
+
+    public function test_store_should_fail_if_there_are_duplicate_user_ids()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $userIds = [$me->id, $user1->id, $user1->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['user_ids.1', 'user_ids.2']);
+    }
 }
