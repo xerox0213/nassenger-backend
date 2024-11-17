@@ -77,4 +77,16 @@ class ConversationApiTest extends TestCase
         $this->assertNotNull($pivot->deleted_at);
         $this->assertNotNull($pivot->last_deleted_at);
     }
+
+    public function test_soft_delete_conversation_should_fail_if_user_is_not_participating_in_it()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $conversation = Conversation::factory()->hasAttached(collect([$user1, $user2]), ['is_admin' => false])->create();
+
+        $response = $this->actingAs($me)->deleteJson(route('conversations.destroy', ['conversation' => $conversation->id]));
+
+        $response->assertStatus(404);
+    }
 }
