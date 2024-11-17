@@ -186,4 +186,17 @@ class ConversationApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid(['user_ids.1', 'user_ids.2']);
     }
+
+    public function test_store_should_fail_if_user_ids_are_not_integer()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $userIds = ['wow', $user1->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid('user_ids.0');
+    }
 }
