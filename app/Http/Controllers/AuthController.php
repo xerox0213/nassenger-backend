@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ApiResponseHelper;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
@@ -14,10 +13,13 @@ class AuthController extends Controller
 {
     public function user(Request $request)
     {
-        $message = 'User retrieved successfully.';
-        $data = new UserResource($request->user());
+        $user = $request->user();
 
-        return ApiResponseHelper::jsonSuccess($message, $data);
+        return response()->json([
+            'success' => true,
+            'message' => 'User retrieved successfully.',
+            'data' => UserResource::make($user)
+        ]);
     }
 
     public function register(RegisterRequest $request)
@@ -26,11 +28,11 @@ class AuthController extends Controller
 
         User::create($credentials);
 
-        $message = 'Registered successfully.';
-        $data = null;
-        $status = 201;
-
-        return ApiResponseHelper::jsonSuccess($message, $data, $status);
+        return response()->json([
+            'success' => true,
+            'message' => 'Registered successfully.',
+            'data' => null
+        ], 201);
     }
 
     public function login(LoginRequest $request)
@@ -38,26 +40,30 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         if (!Auth::attempt($credentials)) {
-            $message = 'Incorrect email or password.';
-            $errors = null;
-            $status = 401;
-
-            return ApiResponseHelper::jsonError($message, $errors, $status);
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect email or password.',
+                'data' => null
+            ], 401);
         }
 
-        $message = 'Login successfully.';
-        $data = new UserResource(Auth::user());
+        $user = Auth::user();
 
-        return ApiResponseHelper::jsonSuccess($message, $data);
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successfully.',
+            'data' => UserResource::make($user)
+        ]);
     }
 
     public function logout()
     {
         Auth::logout();
 
-        $message = 'Logged out successfully.';
-        $data = null;
-
-        return ApiResponseHelper::jsonSuccess($message, $data);
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully.',
+            'data' => null
+        ]);
     }
 }

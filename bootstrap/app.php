@@ -1,6 +1,5 @@
 <?php
 
-use App\Helpers\ApiResponseHelper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,11 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
 
         $exceptions->render(function (ValidationException $e, Request $request) {
-            $message = $e->getMessage();
-            $errors = $e->errors();
-            $status = $e->status;
-
-            return ApiResponseHelper::jsonError($message, $errors, $status);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors()
+            ], $e->status);
         });
 
     })->create();
