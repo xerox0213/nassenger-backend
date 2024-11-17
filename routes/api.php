@@ -20,6 +20,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::apiResource('conversations', ConversationController::class)
-        ->only('index');
+        ->only('index', 'destroy');
 
 });
