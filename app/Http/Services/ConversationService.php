@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ConversationService
 {
-    public function getConversations()
+    public function index()
     {
         return Auth::user()
             ->conversations()
@@ -44,7 +44,7 @@ class ConversationService
         return $conversation;
     }
 
-    public function deleteConversation(Conversation $conversation): void
+    public function destroy(Conversation $conversation): void
     {
         $userId = Auth::id();
         $user = $conversation->users()->findOrFail($userId);

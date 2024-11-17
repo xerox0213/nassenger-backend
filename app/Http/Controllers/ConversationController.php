@@ -11,7 +11,7 @@ class ConversationController extends Controller
 {
     public function index(ConversationService $cs)
     {
-        $conversations = $cs->getConversations();
+        $conversations = $cs->index();
 
         return ConversationResource::collection($conversations);
     }
@@ -27,7 +27,7 @@ class ConversationController extends Controller
 
     public function destroy(Conversation $conversation, ConversationService $cs)
     {
-        $cs->deleteConversation($conversation);
+        $cs->destroy($conversation);
 
         return response()->json(null, 204);
     }
