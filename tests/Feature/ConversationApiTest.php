@@ -211,4 +211,16 @@ class ConversationApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid('user_ids.1');
     }
+
+    public function test_store_should_fail_if_user_ids_list_is_null()
+    {
+        $me = User::factory()->create();
+        $userIds = null;
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid('user_ids');
+    }
 }
