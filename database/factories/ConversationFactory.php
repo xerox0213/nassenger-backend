@@ -13,7 +13,7 @@ class ConversationFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => null,
             'type' => ConversationType::INDIVIDUAL->value
         ];
     }
@@ -21,6 +21,14 @@ class ConversationFactory extends Factory
     public function group(): static
     {
         return $this->state(fn(array $attributes) => [
+            'type' => ConversationType::GROUP
+        ]);
+    }
+
+    public function namedGroup(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'name' => fake()->name,
             'type' => ConversationType::GROUP->value
         ]);
     }
