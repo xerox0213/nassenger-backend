@@ -13,13 +13,7 @@ class AuthController extends Controller
 {
     public function user(Request $request)
     {
-        $user = $request->user();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User retrieved successfully.',
-            'data' => UserResource::make($user)
-        ]);
+        return UserResource::make($request->user());
     }
 
     public function register(RegisterRequest $request)
@@ -28,11 +22,7 @@ class AuthController extends Controller
 
         User::create($credentials);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Registered successfully.',
-            'data' => null
-        ], 201);
+        return response()->json(null, 204);
     }
 
     public function login(LoginRequest $request)
@@ -41,29 +31,17 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'success' => false,
-                'message' => 'Incorrect email or password.',
-                'data' => null
+                'message' => 'Incorrect email or password',
             ], 401);
         }
 
-        $user = Auth::user();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successfully.',
-            'data' => UserResource::make($user)
-        ]);
+        return new UserResource(Auth::user());
     }
 
     public function logout()
     {
         Auth::logout();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully.',
-            'data' => null
-        ]);
+        return response()->json(null, 204);
     }
 }

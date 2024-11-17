@@ -21,12 +21,7 @@ class AuthenticationTest extends TestCase
 
         $response = $this->postJson(route('auth.register'), $credentials);
 
-        $response
-            ->assertStatus(201)
-            ->assertJson([
-                'success' => true,
-                'data' => null
-            ]);
+        $response->assertStatus(204);
     }
 
     public function test_register_should_not_register_the_user_if_he_already_exists()
@@ -38,7 +33,6 @@ class AuthenticationTest extends TestCase
 
         $response
             ->assertStatus(422)
-            ->assertJsonPath('success', false)
             ->assertInvalid('email');
     }
 
@@ -55,7 +49,6 @@ class AuthenticationTest extends TestCase
 
         $response
             ->assertStatus(422)
-            ->assertJsonPath('success', false)
             ->assertInvalid(['firstname', 'lastname', 'email', 'password']);
     }
 
@@ -71,7 +64,6 @@ class AuthenticationTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'success' => true,
                 'data' => [
                     'firstname' => $user->firstname,
                     'lastname' => $user->lastname,
@@ -91,9 +83,7 @@ class AuthenticationTest extends TestCase
 
         $response = $this->postJson(route('auth.login'), $credentials);
 
-        $response
-            ->assertStatus(401)
-            ->assertJsonPath('success', false);
+        $response->assertStatus(401);
         $this->assertGuest();
     }
 
