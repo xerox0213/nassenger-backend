@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ConversationType;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
@@ -88,5 +89,29 @@ class ConversationApiTest extends TestCase
         $response = $this->actingAs($me)->deleteJson(route('conversations.destroy', ['conversation' => $conversation->id]));
 
         $response->assertStatus(404);
+    }
+
+    public function test_should_store_new_individual_conversation()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $userIds = [$me->id, $user1->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(201)
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->where('data.type', ConversationType::INDIVIDUAL)
+                ->etc()
+            );
+
+        $conversationId = $response->json('data.id');
+
+        $this->assertNotNull($me->conversations()->find($conversationId));
+        $this->assertTrue($me->conversations()->find($conversationId)->pivot->is_admin == 0);
+
+        $this->assertNotNull($me->conversations()->find($conversationId));
+        $this->assertTrue($user1->conversations()->find($conversationId)->pivot->is_admin == 0);
     }
 }
