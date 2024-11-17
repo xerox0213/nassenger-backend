@@ -114,4 +114,31 @@ class ConversationApiTest extends TestCase
         $this->assertNotNull($me->conversations()->find($conversationId));
         $this->assertTrue($user1->conversations()->find($conversationId)->pivot->is_admin == 0);
     }
+
+    public function test_should_store_new_group_conversation()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $userIds = [$me->id, $user1->id, $user2->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store', ['user_ids' => $userIds]));
+
+        $response
+            ->assertStatus(201)
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->where('data.type', ConversationType::GROUP)
+                ->etc());
+
+        $conversationId = $response->json('data.id');
+
+        $this->assertNotNull($me->conversations()->find($conversationId));
+        $this->assertTrue($me->conversations()->find($conversationId)->pivot->is_admin == 1);
+
+        $this->assertNotNull($user1->conversations()->find($conversationId));
+        $this->assertTrue($user1->conversations()->find($conversationId)->pivot->is_admin == 0);
+
+        $this->assertNotNull($user2->conversations()->find($conversationId));
+        $this->assertTrue($user2->conversations()->find($conversationId)->pivot->is_admin == 0);
+    }
 }
