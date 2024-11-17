@@ -62,6 +62,19 @@ class ConversationApiTest extends TestCase
                 ->where('meta.per_page', 10)
                 ->etc()
             );
+    }
 
+    public function test_should_soft_delete_the_given_conversation()
+    {
+        $user = User::factory()->create();
+        $conversation = Conversation::factory()->hasAttached($user, ['is_admin' => false])->create();
+
+        $response = $this->actingAs($user)->deleteJson(route('conversations.destroy', ['conversation' => $conversation->id]));
+
+        $pivot = $conversation->users()->find($user->id)->pivot;
+
+        $response->assertStatus(204);
+        $this->assertNotNull($pivot->deleted_at);
+        $this->assertNotNull($pivot->last_deleted_at);
     }
 }
