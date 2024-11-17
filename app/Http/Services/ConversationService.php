@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ConversationType;
 use App\Models\Conversation;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +20,28 @@ class ConversationService
             ->orderBy(DB::raw('max(messages.sent_at)'), 'desc')
             ->select('conversations.*')
             ->simplePaginate(10);
+    }
+
+    public function store(Collection $userIds)
+    {
+        if ($userIds->doesntContain(fn($userId) => $userId == Auth::id())) {
+            $userIds->push(Auth::id());
+        }
+
+        $isGroup = count($userIds) > 2;
+
+        $userIdsWithPivot = [];
+        foreach ($userIds as $userId) {
+            $userIdsWithPivot[$userId] = ['is_admin' => $isGroup && $userId == Auth::id()];
+        }
+
+        $conversation = $isGroup ?
+            Conversation::create(['type' => ConversationType::GROUP, 'name' => null]) :
+            Conversation::create(['type' => ConversationType::INDIVIDUAL, 'name' => null]);
+
+        $conversation->users()->attach($userIdsWithPivot);
+
+        return $conversation;
     }
 
     public function deleteConversation(Conversation $conversation): void
