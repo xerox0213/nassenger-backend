@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MemberController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', [AuthController::class, 'user'])
@@ -21,5 +22,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::apiResource('conversations', ConversationController::class)
         ->only('index', 'store', 'destroy');
+
+    Route::apiResource('members', MemberController::class)
+        ->only('index');
 
 });
