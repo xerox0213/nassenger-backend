@@ -42,4 +42,21 @@ class MemberApiTest extends TestCase
                 ->has('data', 2)
                 ->etc());
     }
+
+    public function test_should_filter_by_lastname()
+    {
+        $me = User::factory()->create(['firstname' => 'John', 'lastname' => 'Doe']);
+        User::factory()->create(['firstname' => 'Tommy', 'lastname' => 'Shelby']);
+        User::factory()->create(['firstname' => 'Arthur', 'lastname' => 'Shelby']);
+        User::factory()->create(['firstname' => 'Meo', 'lastname' => 'Shelay']);
+        User::factory()->create(['firstname' => 'Wow', 'lastname' => 'Shilanoy']);
+
+        $response = $this->actingAs($me)->getJson(route('members.index', ['full_name' => 'Shelby']));
+
+        $response
+            ->assertStatus(200)
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->has('data', 2)
+                ->etc());
+    }
 }
