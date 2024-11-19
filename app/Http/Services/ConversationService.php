@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ConversationService
 {
@@ -46,8 +47,9 @@ class ConversationService
 
     public function destroy(Conversation $conversation): void
     {
-        $userId = Auth::id();
-        $user = $conversation->users()->findOrFail($userId);
+        Gate::authorize('delete', $conversation);
+
+        $user = $conversation->users()->find(Auth::id());
 
         $now = Carbon::now();
         $user->pivot->deleted_at = $now;

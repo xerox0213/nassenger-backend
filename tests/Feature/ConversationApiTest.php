@@ -88,7 +88,7 @@ class ConversationApiTest extends TestCase
 
         $response = $this->actingAs($me)->deleteJson(route('conversations.destroy', ['conversation' => $conversation->id]));
 
-        $response->assertStatus(404);
+        $response->assertStatus(403);
     }
 
     public function test_should_store_new_individual_conversation()
