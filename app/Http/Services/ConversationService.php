@@ -29,7 +29,7 @@ class ConversationService
             $userIds->push(Auth::id());
         }
 
-        $isGroup = count($userIds) > 2;
+        $isGroup = $userIds->count() > 2;
 
         $userIdsWithPivot = [];
         foreach ($userIds as $userId) {
