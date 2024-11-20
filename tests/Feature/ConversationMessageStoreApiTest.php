@@ -177,4 +177,25 @@ class ConversationMessageStoreApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid(['content']);
     }
+
+    public function test_should_not_store_the_message_if_initial_message_id_does_not_exist()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+
+        $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+
+        $messageContent = 'Goose - Synrise';
+
+        $response = $this->actingAs($me)->postJson(route('conversations.messages.store', [
+            'conversation' => $conversation->id
+        ]), [
+            'content' => $messageContent,
+            'initial_message_id' => 123
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['initial_message_id']);
+    }
 }
