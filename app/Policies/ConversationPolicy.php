@@ -15,7 +15,7 @@ class ConversationPolicy
         return $conversation->users()->find($user->id) != null;
     }
 
-    public function view(User $user, Conversation $conversation)
+    public function view(User $user, Conversation $conversation): bool
     {
         return $this->participate($user, $conversation);
     }
