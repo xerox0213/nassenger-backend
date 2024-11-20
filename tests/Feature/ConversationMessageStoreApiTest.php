@@ -121,4 +121,20 @@ class ConversationMessageStoreApiTest extends TestCase
             ->assertStatus(422)
             ->assertInvalid(['content']);
     }
+
+    public function test_should_not_store_the_message_if_content_is_not_present()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+
+        $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+
+        $response = $this->actingAs($me)->postJson(route('conversations.messages.store', [
+            'conversation' => $conversation->id
+        ]));
+
+        $response
+            ->assertStatus(422)
+            ->assertInvalid(['content']);
+    }
 }
