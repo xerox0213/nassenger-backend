@@ -1,0 +1,46 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Enums\MessageType;
+use App\Models\Conversation;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\Fluent\AssertableJson;
+use Tests\TestCase;
+
+class ConversationMessageStoreApiTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_should_store_the_message_in_the_conversation_without_initial_message_id()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+
+        $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+
+        $messageContent = 'Goose - Synrise';
+
+        $response = $this->actingAs($me)->postJson(route('conversations.messages.store', [
+            'conversation' => $conversation->id
+        ]), [
+            'content' => $messageContent
+        ]);
+
+        $response
+            ->assertStatus(201)
+            ->assertJson(fn(AssertableJson $json) => $json
+                ->has('data', fn(AssertableJson $json) => $json
+                    ->where('type', MessageType::TEXT)
+                    ->where('content', $messageContent)
+                    ->where('author.id', $me->id)
+                    ->where('author.firstname', $me->firstname)
+                    ->where('author.lastname', $me->lastname)
+                    ->where('author.avatar', $me->avatar)
+                    ->where('author.you', true)
+                    ->where('initial_message', null)
+                    ->etc())
+            );
+    }
+}
