@@ -28,6 +28,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         ->only('index');
 
     Route::apiResource('conversations.messages', ConversationMessageController::class)
-        ->only('index');
+        ->only('index', 'store');
 
 });
