@@ -57,4 +57,22 @@ class ConversationMessageApiTest extends TestCase
                 ->etc()
             );
     }
+
+    public function test_should_not_return_messages_if_user_do_not_participate_to_the_conversation()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $conversation = Conversation::factory()->hasAttached(collect([$user1, $user2]), ['is_admin' => false])->create();
+
+        $messageFromUser1 = Message::factory()->for($user1)->for($conversation)->create();
+        Message::factory()->for($user2)->for($conversation)->for($messageFromUser1, 'initialMessage')->create();
+
+        $response = $this->actingAs($me)->getJson(route('conversations.messages.index', ['conversation' => $conversation->id]));
+
+        $response
+            ->assertForbidden()
+            ->assertJsonMissingPath('data');
+    }
 }
