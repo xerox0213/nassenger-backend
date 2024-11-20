@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
-class ConversationMessageApiTest extends TestCase
+class ConversationMessageIndexApiTest extends TestCase
 {
     use RefreshDatabase;
 
