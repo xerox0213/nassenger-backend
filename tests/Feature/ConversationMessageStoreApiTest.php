@@ -80,4 +80,25 @@ class ConversationMessageStoreApiTest extends TestCase
                     ->etc())
             );
     }
+
+    public function test_should_not_store_the_message_if_the_user_do_not_participate_to_the_conversation()
+    {
+        $me = User::factory()->create();
+        $user1 = User::factory()->create();
+        $contact = User::factory()->create();
+
+        $conversation = Conversation::factory()->hasAttached(collect([$user1, $contact]), ['is_admin' => false])->create();
+
+        $messageContent = 'Goose - Synrise';
+
+        $response = $this->actingAs($me)->postJson(route('conversations.messages.store', [
+            'conversation' => $conversation->id
+        ]), [
+            'content' => $messageContent
+        ]);
+
+        $response
+            ->assertForbidden()
+            ->assertJsonMissingPath('data');
+    }
 }
