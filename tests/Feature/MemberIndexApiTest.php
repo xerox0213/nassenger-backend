@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
-class MemberApiTest extends TestCase
+class MemberIndexApiTest extends TestCase
 {
     use RefreshDatabase;
 
