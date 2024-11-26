@@ -20,7 +20,7 @@ class ConversationMessageUpdateApiTest extends TestCase
         $message = Message::factory()->for($me)->for($conversation)->create();
         $newMessageContent = 'Once upon a time.';
 
-        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update',[
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
             'conversation' => $conversation->id,
             'message' => $message->id
         ]), ['content' => $newMessageContent]);
@@ -31,6 +31,23 @@ class ConversationMessageUpdateApiTest extends TestCase
             ->assertJsonPath('data.content', $newMessageContent);
     }
 
+    public function test_should_fail_if_the_user_does_not_participate_to_the_conversation()
+    {
+        $me = User::factory()->create();
+        $contact1 = User::factory()->create();
+        $contact2 = User::factory()->create();
+        $conversation = Conversation::factory()->group()->hasAttached(collect([$contact1, $contact2]), ['is_admin' => false])->create();
+        $message = Message::factory()->for($me)->for($conversation)->create();
+        $newMessageContent = 'Once upon a time.';
+
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
+            'conversation' => $conversation->id,
+            'message' => $message->id
+        ]), ['content' => $newMessageContent]);
+
+        $response->assertStatus(403);
+    }
+
     public function test_should_fail_if_the_new_message_content_is_not_present()
     {
         $me = User::factory()->create();
@@ -38,7 +55,7 @@ class ConversationMessageUpdateApiTest extends TestCase
         $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
         $message = Message::factory()->for($me)->for($conversation)->create();
 
-        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update',[
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
             'conversation' => $conversation->id,
             'message' => $message->id
         ]));
@@ -53,7 +70,7 @@ class ConversationMessageUpdateApiTest extends TestCase
         $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
         $message = Message::factory()->for($me)->for($conversation)->create();
 
-        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update',[
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
             'conversation' => $conversation->id,
             'message' => $message->id
         ]), ['content' => null]);
@@ -69,7 +86,7 @@ class ConversationMessageUpdateApiTest extends TestCase
         $message = Message::factory()->for($me)->for($conversation)->create();
         $newMessageContent = '';
 
-        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update',[
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
             'conversation' => $conversation->id,
             'message' => $message->id
         ]), ['content' => $newMessageContent]);
