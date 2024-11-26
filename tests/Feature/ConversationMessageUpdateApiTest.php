@@ -48,6 +48,22 @@ class ConversationMessageUpdateApiTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_should_fail_if_the_user_is_not_the_author_of_the_message()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+        $conversation = Conversation::factory()->group()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+        $message = Message::factory()->for($contact)->for($conversation)->create();
+        $newMessageContent = 'Once upon a time.';
+
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update', [
+            'conversation' => $conversation->id,
+            'message' => $message->id
+        ]), ['content' => $newMessageContent]);
+
+        $response->assertStatus(403);
+    }
+
     public function test_should_fail_if_the_new_message_content_is_not_present()
     {
         $me = User::factory()->create();
