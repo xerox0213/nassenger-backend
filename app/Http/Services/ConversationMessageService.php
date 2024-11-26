@@ -38,4 +38,13 @@ class ConversationMessageService
 
         return $message;
     }
+
+    public function update(Conversation $conversation, Message $message, string $newMessageContent): void
+    {
+        Gate::authorize('view', $conversation);
+        Gate::authorize('update', $message);
+
+        $message->content = $newMessageContent;
+        $message->save();
+    }
 }
