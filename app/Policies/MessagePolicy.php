@@ -14,4 +14,9 @@ class MessagePolicy
     {
         return $message->user->id == $user->id;
     }
+
+    public function delete(User $user, Message $message): bool
+    {
+        return $message->user->id == $user->id;
+    }
 }
