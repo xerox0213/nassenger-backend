@@ -60,4 +60,20 @@ class ConversationMessageUpdateApiTest extends TestCase
 
         $response->assertInvalid('content');
     }
+
+    public function test_should_fail_if_the_new_message_content_is_an_empty_string()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+        $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+        $message = Message::factory()->for($me)->for($conversation)->create();
+        $newMessageContent = '';
+
+        $response = $this->actingAs($me)->patchJson(route('conversations.messages.update',[
+            'conversation' => $conversation->id,
+            'message' => $message->id
+        ]), ['content' => $newMessageContent]);
+
+        $response->assertInvalid('content');
+    }
 }
