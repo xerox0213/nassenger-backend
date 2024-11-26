@@ -9,18 +9,28 @@ use App\Models\Conversation;
 
 class ConversationMessageController extends Controller
 {
-    public function index(ConversationMessageService $cms, Conversation $conversation)
+    private ConversationMessageService $cms;
+
+    /**
+     * @param ConversationMessageService $cms
+     */
+    public function __construct(ConversationMessageService $cms)
     {
-        $conversationMessages = $cms->index($conversation);
+        $this->cms = $cms;
+    }
+
+    public function index(Conversation $conversation)
+    {
+        $conversationMessages = $this->cms->index($conversation);
 
         return MessageResource::collection($conversationMessages);
     }
 
-    public function store(ConversationMessageStoreRequest $request, ConversationMessageService $cms, Conversation $conversation)
+    public function store(ConversationMessageStoreRequest $request, Conversation $conversation)
     {
         $messageData = $request->validated();
 
-        $conversationMessage = $cms->store($conversation, $messageData);
+        $conversationMessage = $this->cms->store($conversation, $messageData);
 
         return MessageResource::make($conversationMessage)->response()->setStatusCode(201);
     }
