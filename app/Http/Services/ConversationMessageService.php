@@ -47,4 +47,12 @@ class ConversationMessageService
         $message->content = $newMessageContent;
         $message->save();
     }
+
+    public function destroy(Conversation $conversation, Message $message): void
+    {
+        Gate::authorize('view', $conversation);
+        Gate::authorize('delete', $message);
+
+        $message->delete();
+    }
 }

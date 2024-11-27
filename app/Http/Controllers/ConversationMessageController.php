@@ -45,4 +45,11 @@ class ConversationMessageController extends Controller
 
         return MessageResource::make($message);
     }
+
+    public function destroy(Conversation $conversation, Message $message)
+    {
+        $this->cms->destroy($conversation, $message);
+
+        return response()->json(null, 204);
+    }
 }
