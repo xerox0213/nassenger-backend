@@ -44,4 +44,20 @@ class ConversationMessageDestroyApiTest extends TestCase
         $response->assertStatus(403);
         $this->assertModelExists($message);
     }
+
+    public function test_should_fail_if_the_user_is_not_the_author_of_the_message()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+        $conversation = Conversation::factory()->group()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+        $message = Message::factory()->for($contact)->for($conversation)->create();
+
+        $response = $this->actingAs($me)->delete(route('conversations.messages.destroy', [
+            'conversation' => $conversation->id,
+            'message' => $message->id
+        ]));
+
+        $response->assertStatus(403);
+        $this->assertModelExists($message);
+    }
 }
