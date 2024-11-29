@@ -31,6 +31,10 @@ class ConversationService
 
         $isGroup = $userIds->count() > 2;
 
+        $conversation = $isGroup ? null : $this->viewIndividualConversation($userIds[0], $userIds[1]);
+
+        if ($conversation) return $conversation;
+
         $userIdsWithPivot = [];
         foreach ($userIds as $userId) {
             $userIdsWithPivot[$userId] = ['is_admin' => $isGroup && $userId == Auth::id()];
@@ -53,5 +57,15 @@ class ConversationService
         $user->pivot->deleted_at = $now;
         $user->pivot->last_deleted_at = $now;
         $user->pivot->save();
+    }
+
+    private function viewIndividualConversation(int $user1, int $user2) : Conversation | null
+    {
+        return Conversation::where('type', 'individual')
+            ->join('conversation_user', 'conversations.id', '=', 'conversation_user.conversation_id')
+            ->whereIn('conversation_user.user_id', [$user1, $user2])
+            ->groupBy('conversations.id')
+            ->havingRaw('count(conversation_user.user_id) = 2')
+            ->first();
     }
 }
