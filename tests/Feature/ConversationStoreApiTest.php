@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\ConversationType;
+use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -143,5 +144,17 @@ class ConversationStoreApiTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertInvalid('user_ids');
+    }
+
+    public function test_store_should_return_the_existing_individual_conversation()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+        $conversation = Conversation::factory()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+        $userIds = [$me->id, $contact->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store'), ['user_ids' => $userIds]);
+
+        $response->assertJsonPath('data.id', $conversation->id);
     }
 }
