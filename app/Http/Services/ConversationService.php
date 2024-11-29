@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Enums\ConversationType;
+use App\Enums\ConversationType as CT;
 use App\Models\Conversation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -36,9 +36,7 @@ class ConversationService
             $userIdsWithPivot[$userId] = ['is_admin' => $isGroup && $userId == Auth::id()];
         }
 
-        $conversation = $isGroup ?
-            Conversation::create(['type' => ConversationType::GROUP, 'name' => null]) :
-            Conversation::create(['type' => ConversationType::INDIVIDUAL, 'name' => null]);
+        $conversation = Conversation::create(['type' => $isGroup ? CT::GROUP : CT::INDIVIDUAL, 'name' => null]);
 
         $conversation->users()->attach($userIdsWithPivot);
 
