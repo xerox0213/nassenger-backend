@@ -157,4 +157,16 @@ class ConversationStoreApiTest extends TestCase
 
         $response->assertJsonPath('data.id', $conversation->id);
     }
+
+    public function test_store_should_not_return_the_existing_group_conversation()
+    {
+        $me = User::factory()->create();
+        $contact = User::factory()->create();
+        $conversation = Conversation::factory()->group()->hasAttached(collect([$me, $contact]), ['is_admin' => false])->create();
+        $userIds = [$me->id, $contact->id];
+
+        $response = $this->actingAs($me)->postJson(route('conversations.store'), ['user_ids' => $userIds]);
+
+        $this->assertNotEquals($conversation->id, $response->json('data.id'));
+    }
 }
