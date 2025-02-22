@@ -31,10 +31,10 @@ class AuthController extends Controller
         ], 401);
     }
 
-    public function logout(Request $request) {
+    public function logout() {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        session()->invalidate();
+        session()->regenerateToken();
         return response()->noContent();
     }
 }
