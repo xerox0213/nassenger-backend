@@ -29,4 +29,11 @@ class RegisterTest extends TestCase
         $response = $this->postJson(route('auth.register'), $this->credentials);
         $response->assertJsonValidationErrorFor('email');
     }
+
+    public function test_should_reject_if_password_is_less_than_three_chars_long()
+    {
+        $this->credentials['password'] = 'il';
+        $response = $this->postJson(route('auth.register'), $this->credentials);
+        $response->assertJsonValidationErrorFor('password');
+    }
 }
