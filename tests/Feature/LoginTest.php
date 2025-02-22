@@ -33,6 +33,7 @@ class LoginTest extends TestCase
     {
         $response = $this->postJson(route('auth.login', $this->credentials));
         $response->assertNoContent();
+        $this->assertAuthenticatedAs($this->user);
     }
 
     public function test_should_reject_if_email_is_wrong()
