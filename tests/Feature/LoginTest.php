@@ -35,8 +35,16 @@ class LoginTest extends TestCase
         $response->assertNoContent();
     }
 
-    public function test_should_reject_if_email_is_wrong() {
+    public function test_should_reject_if_email_is_wrong()
+    {
         $this->credentials['email'] = 'stefan.salvatore@gmail.com';
+        $response = $this->postJson(route('auth.login'), $this->credentials);
+        $response->assertUnauthorized();
+    }
+
+    public function test_should_reject_if_password_is_wrong()
+    {
+        $this->credentials['password'] = 'iloveyoucaroline';
         $response = $this->postJson(route('auth.login'), $this->credentials);
         $response->assertUnauthorized();
     }
