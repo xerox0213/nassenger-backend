@@ -27,8 +27,9 @@ class RegisterTest extends TestCase
             'last_name' => $this->credentials['last_name'],
             'email' => $this->credentials['email']
         ]);
-        $user = User::where('email', '=', $this->credentials['email'])->first();
-        $this->assertTrue(Hash::check($this->credentials['password'], $user->password));
+        $password = $this->credentials['password'];
+        $hashedPassword = User::where('email', '=', $this->credentials['email'])->first()->password;
+        $this->assertTrue(Hash::check($password, $hashedPassword));
     }
 
     public function test_should_reject_if_email_already_exists()
